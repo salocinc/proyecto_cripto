@@ -1,0 +1,41 @@
+.div1 {
+  background-image: url("../../assets/img/vista_trasera_personas_emocionadas_brazos_levantados_divirtiendose%20(1).jpg");
+}
+
+#rojito {
+  background-color: var(--bs-red);
+  color: var(--bs-gray-100);
+}
+
+.input-group > :not(:first-child):not(.dropdown-menu):not(.valid-tooltip):not(.valid-feedback):not(.invalid-tooltip):not(.invalid-feedback) {
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
+  color: var(--bs-btn-active-color);
+  background-color: var(--bs-btn-active-bg);
+  border-color: var(--bs-btn-active-border-color);
+}
+
+.floating-button {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ffd200;
+  background-image: url("../img/pencil3.svg");
+  background-repeat: no-repeat;
+  background-size: 60%; /* Ajusta el tamaño de la imagen */
+  background-position: center; /* Centra la imagen */
+  color: #fff;
+  text-align: center;
+  display: flex; /* Centra el contenido horizontalmente */
+  justify-content: center; /* Centra el contenido horizontalmente */
+  line-height: 35px;
+  font-size: 35px;
+  z-index: 999;
+}

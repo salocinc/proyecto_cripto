@@ -1,0 +1,45 @@
+.review-content{
+    height: 100%;
+    font-size: 14px;
+}
+.review{
+    border-width: 1px;
+    padding: 5px;
+    height: 100%;
+}
+
+.author-date{
+    font-size: 14px;
+    font-weight: bold;
+    color: rgb(0, 0, 0);
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.date{
+    font-weight: lighter;
+    font-size: 10px;
+}
+
+.venue{
+    font-weight: 400;
+    font-size:20px;
+    color: rgb(0, 0, 0);
+}
+
+.concert{
+    font-style: italic;
+    font-size: 16px;
+    color: rgb(0, 0, 0);
+}
+
+.star {
+    display: inline-block;
+    font-size: 20px;
+    color: #ccc;
+}
+  
+.star-filled {
+    color: #ffd200;
+}

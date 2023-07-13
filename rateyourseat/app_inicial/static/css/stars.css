@@ -1,0 +1,35 @@
+.estrellas {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 1.5em;
+}
+.estrella {
+    display: inline-block;
+    position: relative;
+    width: 1.1em;
+}
+.estrella:before,
+.estrella:after {
+    content: "\2605";
+    position: absolute;
+    opacity: 0;
+}
+.estrella:before {
+    z-index: 2;
+    color: #ffd200;
+}
+.estrella:after {
+    z-index: 1;
+    color: #ccc;
+}
+.estrellas input[type="radio"] {
+    display: none;
+}
+.estrellas input[type="radio"]:checked ~ .estrella:before {
+    opacity: 1;
+}
+.estrellas input[type="radio"]:not(:checked) ~ .estrella:after {
+    opacity: 1;
+}

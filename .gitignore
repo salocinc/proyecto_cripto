@@ -1,0 +1,4 @@
+#Ignora la base de datos de sqlite
+db.sqlite3
+*.pyc
+images/

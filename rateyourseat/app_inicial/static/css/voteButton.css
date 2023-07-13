@@ -1,0 +1,54 @@
+.vote-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100%;
+}
+
+.upvote-button {
+border: none;
+background: none;
+font-size: 24px;
+cursor: pointer;
+transition: color 0.2s, transform 0.2s;
+color: #000; /* Color original del botón */
+}
+
+.downvote-button {
+border: none;
+background: none;
+font-size: 24px;
+cursor: pointer;
+transition: color 0.2s, transform 0.2s;
+color: #000; /* Color original del botón */
+}
+
+.upvote-button:hover {
+color: #1E88E5; /* Color cuando se hace hover */
+transform: scale(1.2); /* Cambia el tamaño cuando se hace hover */
+}
+
+.downvote-button:hover {
+color: #FF4081; /* Color cuando se hace hover */
+transform: scale(1.2); /* Cambia el tamaño cuando se hace hover */
+}
+
+.upvote-button.clicked {
+color: #1E88E5; /* Nuevo color después de hacer clic */
+}
+
+.downvote-button.clicked {
+color: #FF4081; /* Nuevo color después de hacer clic */
+}
+
+/* Estilo para botones deshabilitados */
+.upvote-button:disabled {
+    color: #ccc; /* Color para botón deshabilitado */
+    /*cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+}
+
+.downvote-button:disabled {
+    color: #ccc; /* Color para botón deshabilitado */
+    /*cursor: not-allowed; /* Cambiar el cursor cuando el botón está deshabilitado */
+}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %} RateYourSeat {% endblock %}
+
+{% comment %} {% block styles %} {% endblock %} {% endcomment %}
+
+{% block content %}
+
+
+
+<div class="container pt-4 pt-xl-5">         
+        <div class="container py-5">
+            <form method="GET">
+                <div class="input-group">
+                    <input name="searchReview" class="form-control" type="text" placeholder="Buscar artista o evento" aria-label="Search" aria-describedby="button-addon2" />
+                    <button id="button-addon2" class="btn btn-outline-secondary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+            <form method="GET">
+                <div class="input-group mb-3" style="margin-top: 20px;">
+                    <span class="input-group-text" id="basic-addon1" style="margin: 3px 3px 3px 0;">Mostrar Reseñas: </span>
+                        <div style="margin: 3px;">
+                            <select id="venueFilter" name="venueFilter" class="form-select" aria-expanded="false" >
+                                <option selected disabled>Recintos</option>
+                            </select>
+                        </div>
+                        <div style="margin: 3px;">
+                            <select class="form-select" id="order" name="order" aria-expanded="false">
+                                <option selected disabled>Ordenar por</option> 
+                                <option value="best">Mejor</option>   
+                                <option value="popular">Popular</option>                        
+                                <option value="recent">Nuevo</option>
+                                <option value="oldest">Antiguo</option>
+                            </select>
+                        </div>
+                    <button class="btn btn-outline-primary" style="margin: 3px 3px 3px 0;" type="submit">Filtrar</button>
+                </div> 
+            </form>
+        </div>
+
+    {% if not all_reviews %}
+            <h4 class="text-center" >No hay reseñas disponibles aún.</h4>
+            <br>
+            <div class="text-center">
+                <a class="btn btn-primary" href="/add-review/">Crear una reseña</a>
+            </div>
+    {% endif %}
+
+    {% for element in all_reviews %}
+    {% include 'base_review.html' with review=element %}
+    {% endfor %}
+    <a href="/add-review" class="btn floating-button btn-floating"></a>
+</div>
+{% endblock %}
+
+{% block scripts %} 
+<script src="../../static/js/date.js"></script>
+<script src="../../static/js/venuesFilter.js"></script>
+{% endblock %}
