@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
 {% block title %} Crear documento {% endblock %}
+
 {% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 {% endblock %}
 
 {% block content %} 
@@ -11,7 +13,6 @@
             <div class="row">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
                     <h2 class="display-6 fw-bold mb-4">Crea un documento</h2>
-                    <p class="text-muted">Selecciona usuario firmante</p>
                 </div>
             </div>
             <div class="row d-flex justify-content-center">
@@ -31,11 +32,14 @@
                                 <div id="image-preview"></div>
                             </div>
                             -->
-                            <div>
-                                <input name="secret_key" style="margin-bottom: 15px;" class="form-control shadow" type="text" placeholder="Ingresa tu secret key" aria-label="default input example">
+                            <div style="display: flex; align-items: center;">
+                                <input name="secret_key" id="keyInput" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key" aria-label="default input example">
+                                <button type="button" id="visibilityButton" onclick="toggleVisibility()" style="margin-left: 10px; align-self: center;">
+                                  <i class="fas fa-eye-slash"></i>
+                                </button>
                             </div>
                             <div>
-                                <button class="btn btn-primary shadow d-block w-100" type="submit">Guardar documento</button>
+                                <button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-top: 10px;">Guardar documento</button>
                             </div>
                         </form>
                         
@@ -47,4 +51,20 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    function toggleVisibility() {
+      var keyInput = document.getElementById("keyInput");
+      var visibilityButton = document.getElementById("visibilityButton");
+      
+      if (keyInput.type === "password") {
+        keyInput.type = "text";
+        visibilityButton.querySelector("i").classList.remove("fa-eye-slash");
+        visibilityButton.querySelector("i").classList.add("fa-eye");
+      } else {
+        keyInput.type = "password";
+        visibilityButton.querySelector("i").classList.remove("fa-eye");
+        visibilityButton.querySelector("i").classList.add("fa-eye-slash");
+      }
+    }
+  </script>
 {% endblock %}  

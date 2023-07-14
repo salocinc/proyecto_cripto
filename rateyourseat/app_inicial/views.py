@@ -178,15 +178,15 @@ Returns:
     HttpResponse or HttpResponseRedirect: The response object.
 """
 @login_required(login_url='/log_in')
-def add_review(request):
+def request_to(request):
     if request.method == 'GET':
         usuarios = User.objects.all()
         context = {
             "is_logged": request.user.is_authenticated,
-            'current_page': 'add_review',
+            'current_page': 'request_to',
             'usuarios': usuarios,
         }
-        return render(request,"app_inicial/add_review.html", context)
+        return render(request,"app_inicial/request_to.html", context)
     if request.method =='POST':
         user_id = request.user
         #Contenido del documento
@@ -206,9 +206,9 @@ def add_review(request):
             )
         document.save()
         context = {
-            'current_page': 'add_review',
+            'current_page': 'request_to',
         }
-        return HttpResponseRedirect('/my_reviews', context)
+        return HttpResponseRedirect('/home', context)
 
 """
 Create a document (login required).
@@ -221,7 +221,10 @@ Returns:
 @login_required(login_url='/log_in')
 def create_document(request):
     if request.method == 'GET':
-        return render(request,"app_inicial/create_document.html")
+        context = {
+            'current_page': 'create_document'
+        }
+        return render(request,"app_inicial/create_document.html", context)
     if request.method =='POST':
         user_id = request.user
         #Contenido del documento
@@ -231,7 +234,7 @@ def create_document(request):
         form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
             photo = form.cleaned_data.get("image")
-        cripticSign = sign(content.encode(), request.POST['secret_key'], "SHA-256")
+        cripticSign = sign(content.encode(), request.POST['secret_key'].encode(), "SHA-256")
         try:
             #Verifica que la Private Key entregada sea correcta para ese usuario
             verify(content.encode(), cripticSign, request.user.public_key)
