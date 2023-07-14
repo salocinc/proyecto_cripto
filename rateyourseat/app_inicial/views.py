@@ -1,4 +1,5 @@
 import datetime
+from django.core.exceptions import ValidationError
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.template.loader import get_template
@@ -8,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from app_inicial.utils import create_initial_locations
-from rsa import sign, verify, newkeys
+from rsa import *
 
 """
 Manage vote for a review.
@@ -159,16 +160,27 @@ def sign_up(request):
         nombre= request.POST['usuario']
         email= request.POST['email']
         contraseña= request.POST['password']
+        (pubkey, privkey) = newkeys(256)
+        (pubkey1, pubkey2) = (pubkey.n,pubkey.e)
+        (secret_key1, secret_key2, secret_key3, secret_key4, secret_key5) = (privkey.n, privkey.e, privkey.d, privkey.p, privkey.q)
         if User.objects.filter(username=nombre).exists():
             #devolver al mismo login ojalá sin borrar la info ingresada con un mensaje que diga que ya existe ese username
             return render(request,"app_inicial/signUp.html", {"error":"El nombre de usario '"+nombre+"' ya existe, eliga uno diferente"})
-        user = User.objects.create_user(username=nombre, password=contraseña, email=email)
+        user = User.objects.create_user(username=nombre, password=contraseña, email=email, public_key1=pubkey1, public_key2=pubkey2)
         login(request, user)
         context = {
-            "is_logged": request.user.is_authenticated
+            "is_logged": request.user.is_authenticated,
+            'secret_key1': secret_key1,
+            'secret_key2': secret_key2,
+            'secret_key3': secret_key3,
+            'secret_key4': secret_key4,
+            'secret_key5': secret_key5,
         }
-        return HttpResponseRedirect('/home', context)
-                    
+        return render(request,'app_inicial/secret_keys.html', context)
+
+def secret_keys(request):
+    if request.method == 'GET':
+        return render(request,"/secret_keys.html")
 """
 Add a review (login required).
 This function handles the addition of a review. The user must be logged in to access this view.
@@ -231,13 +243,19 @@ def create_document(request):
         title = request.POST['title']
         content = request.POST['content']
         request_to=request.user
+        secret_key1 = request.POST['secret_key']
+        secret_key2 = request.POST['secret_key2']
+        secret_key3 = request.POST['secret_key3']
+        secret_key4 = request.POST['secret_key4']
+        secret_key5 = request.POST['secret_key5']
+        secret_key = PrivateKey(int(secret_key1), int(secret_key2), int(secret_key3), int(secret_key4), int(secret_key5))
         form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
             photo = form.cleaned_data.get("image")
-        cripticSign = sign(content.encode(), request.POST['secret_key'].encode(), "SHA-256")
+        signature = sign(content.encode(), secret_key, "SHA-256")
         try:
             #Verifica que la Private Key entregada sea correcta para ese usuario
-            verify(content.encode(), cripticSign, request.user.public_key)
+            verify(content.encode('ascii'), signature, request.user.public_key)
         except:
             messages.error(request, 'La llave privada ingresada no es correcta.')
             return HttpResponseRedirect('/create_document')
@@ -247,7 +265,7 @@ def create_document(request):
             request_to=request_to, 
             content=content,
             accepted=1,
-            sign = cripticSign,
+            sign = signature,
             )
         document.save()
         return HttpResponseRedirect('/home')

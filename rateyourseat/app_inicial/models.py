@@ -9,7 +9,8 @@ Args: AbstractUser: username,first_name,last_name,email,password,groups,user_per
 class User(AbstractUser):
         nick = models.CharField(max_length=20)
         email = models.EmailField(unique=True)
-        public_key = models.IntegerField(null=True)
+        public_key1 = models.TextField(null=True)
+        public_key2 = models.TextField(null=True)
 
 class ReviewForm(forms.Form):
         image = forms.ImageField(label='image', max_length=100)
@@ -71,6 +72,6 @@ class Document():
     creator = models.ForeignKey('User', on_delete=models.CASCADE)
     title = models.TextField()
     content = models.TextField()
-    sign = models.IntegerField()
+    sign = models.TextField()
     request_to = models.ForeignKey('User', on_delete=models.CASCADE)
     accepted = models.IntegerField()

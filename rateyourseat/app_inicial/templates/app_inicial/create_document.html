@@ -33,8 +33,32 @@
                             </div>
                             -->
                             <div style="display: flex; align-items: center;">
-                                <input name="secret_key" id="keyInput" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key" aria-label="default input example">
-                                <button type="button" id="visibilityButton" onclick="toggleVisibility()" style="margin-left: 10px; align-self: center;">
+                                <input name="secret_key1" id="keyInput" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key 1" aria-label="default input example">
+                                <button type="button" id="visibilityButton1" onclick="toggleVisibility1()" style="margin-left: 10px; align-self: center;">
+                                  <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <input name="secret_key2" id="keyInput2" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key 2" aria-label="default input example">
+                                <button type="button" id="visibilityButton2" onclick="toggleVisibility2()" style="margin-left: 10px; align-self: center;">
+                                  <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <input name="secret_key3" id="keyInput3" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key 3" aria-label="default input example">
+                                <button type="button" id="visibilityButton3" onclick="toggleVisibility3()" style="margin-left: 10px; align-self: center;">
+                                  <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <input name="secret_key4" id="keyInput4" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key 4" aria-label="default input example">
+                                <button type="button" id="visibilityButton4" onclick="toggleVisibility4()" style="margin-left: 10px; align-self: center;">
+                                  <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <input name="secret_key5" id="keyInput5" style="margin-bottom: 0; flex: 1;" class="form-control shadow" type="password" placeholder="Ingresa tu secret key 5" aria-label="default input example">
+                                <button type="button" id="visibilityButton5" onclick="toggleVisibility5()" style="margin-left: 10px; align-self: center;">
                                   <i class="fas fa-eye-slash"></i>
                                 </button>
                             </div>
@@ -52,9 +76,65 @@
 
 {% block scripts %}
 <script>
-    function toggleVisibility() {
+    function toggleVisibility1() {
       var keyInput = document.getElementById("keyInput");
-      var visibilityButton = document.getElementById("visibilityButton");
+      var visibilityButton = document.getElementById("visibilityButton1");
+      
+      if (keyInput.type === "password") {
+        keyInput.type = "text";
+        visibilityButton.querySelector("i").classList.remove("fa-eye-slash");
+        visibilityButton.querySelector("i").classList.add("fa-eye");
+      } else {
+        keyInput.type = "password";
+        visibilityButton.querySelector("i").classList.remove("fa-eye");
+        visibilityButton.querySelector("i").classList.add("fa-eye-slash");
+      }
+    }
+    function toggleVisibility2() {
+      var keyInput = document.getElementById("keyInput2");
+      var visibilityButton = document.getElementById("visibilityButton2");
+      
+      if (keyInput.type === "password") {
+        keyInput.type = "text";
+        visibilityButton.querySelector("i").classList.remove("fa-eye-slash");
+        visibilityButton.querySelector("i").classList.add("fa-eye");
+      } else {
+        keyInput.type = "password";
+        visibilityButton.querySelector("i").classList.remove("fa-eye");
+        visibilityButton.querySelector("i").classList.add("fa-eye-slash");
+      }
+    }
+    function toggleVisibility3() {
+      var keyInput = document.getElementById("keyInput3");
+      var visibilityButton = document.getElementById("visibilityButton3");
+      
+      if (keyInput.type === "password") {
+        keyInput.type = "text";
+        visibilityButton.querySelector("i").classList.remove("fa-eye-slash");
+        visibilityButton.querySelector("i").classList.add("fa-eye");
+      } else {
+        keyInput.type = "password";
+        visibilityButton.querySelector("i").classList.remove("fa-eye");
+        visibilityButton.querySelector("i").classList.add("fa-eye-slash");
+      }
+    }
+    function toggleVisibility4() {
+      var keyInput = document.getElementById("keyInput4");
+      var visibilityButton = document.getElementById("visibilityButton4");
+      
+      if (keyInput.type === "password") {
+        keyInput.type = "text";
+        visibilityButton.querySelector("i").classList.remove("fa-eye-slash");
+        visibilityButton.querySelector("i").classList.add("fa-eye");
+      } else {
+        keyInput.type = "password";
+        visibilityButton.querySelector("i").classList.remove("fa-eye");
+        visibilityButton.querySelector("i").classList.add("fa-eye-slash");
+      }
+    }
+    function toggleVisibility5() {
+      var keyInput = document.getElementById("keyInput5");
+      var visibilityButton = document.getElementById("visibilityButton5");
       
       if (keyInput.type === "password") {
         keyInput.type = "text";
