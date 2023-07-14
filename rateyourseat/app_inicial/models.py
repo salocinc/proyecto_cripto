@@ -8,6 +8,8 @@ Args: AbstractUser: username,first_name,last_name,email,password,groups,user_per
 """
 class User(AbstractUser):
         nick = models.CharField(max_length=20)
+        email = models.EmailField(unique=True)
+        public_key = models.IntegerField(null=True)
 
 class ReviewForm(forms.Form):
         image = forms.ImageField(label='image', max_length=100)
@@ -61,3 +63,14 @@ class Vote_Review(models.Model):
         user = models.ForeignKey('User', on_delete=models.CASCADE)
         review = models.ForeignKey('Review', on_delete=models.CASCADE)
         is_positive = models.SmallIntegerField() #1=voted positive ; -1=voted negative ; 0=havent voted
+
+"""
+Nuevos Models para la firma
+"""
+class Document():
+    creator = models.ForeignKey('User', on_delete=models.CASCADE)
+    title = models.TextField()
+    content = models.TextField()
+    sign = models.IntegerField()
+    request_to = models.ForeignKey('User', on_delete=models.CASCADE)
+    accepted = models.IntegerField()

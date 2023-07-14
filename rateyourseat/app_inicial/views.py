@@ -2,12 +2,13 @@ import datetime
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.template.loader import get_template
-from app_inicial.models import User, Review, Location, ReviewForm, Comment, Vote_Review
+from app_inicial.models import User, Review, Location, ReviewForm, Comment, Vote_Review, Document
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from app_inicial.utils import create_initial_locations
+from rsa import sign, verify, newkeys
 
 """
 Manage vote for a review.
@@ -62,6 +63,7 @@ def manageVote(request,kind):
             return
 
 """
+Delete
 Maintain votes for a list of reviews.
 This function updates the vote status for each review in the given list, based on the user's voting record.
 Args:
@@ -178,45 +180,74 @@ Returns:
 @login_required(login_url='/log_in')
 def add_review(request):
     if request.method == 'GET':
+        usuarios = User.objects.all()
         context = {
             "is_logged": request.user.is_authenticated,
             'current_page': 'add_review',
+            'usuarios': usuarios,
         }
         return render(request,"app_inicial/add_review.html", context)
     if request.method =='POST':
         user_id = request.user
-        concert = request.POST['event']
-        venue_name = request.POST['place-select']
-        if Location.objects.filter(name=venue_name).exists()!=True:
-            print("This venue does not exist in the database")
-            create_initial_locations()
-        venue = Location.objects.get(name=venue_name)
-        sit_sector = request.POST['sit-select']
+        #Contenido del documento
+        title = request.POST['title']
         content = request.POST['content']
-        photo = None
+        request_to=request.POST['request_to']
         form = ReviewForm(request.POST, request.FILES)
         if form.is_valid():
             photo = form.cleaned_data.get("image")
-        stars = request.POST['puntuacion']
-        votes = 0
-        total_votes = 0
-        current_datetime = datetime.datetime.now()
-        review = Review(
-            user_id=user_id, 
-            concert=concert, 
-            venue=venue, 
-            sit_sector=sit_sector, 
-            content=content, 
-            photo=photo, 
-            stars=stars, 
-            votes=votes, 
-            total_votes=total_votes, 
-            date=current_datetime)
-        review.save()
+        document = Document(
+            creator=user_id, 
+            title = title,
+            request_to=request_to, 
+            content=content,
+            accepted=0,
+            sign = None,
+            )
+        document.save()
         context = {
-            'current_page': 'add_review'
+            'current_page': 'add_review',
         }
         return HttpResponseRedirect('/my_reviews', context)
+
+"""
+Create a document (login required).
+This function handles the creation of a document. The user must be logged in to access this view.
+Args:
+    request (HttpRequest)
+Returns:
+    HttpResponse or HttpResponseRedirect: The response object.
+"""
+@login_required(login_url='/log_in')
+def create_document(request):
+    if request.method == 'GET':
+        return render(request,"app_inicial/create_document.html")
+    if request.method =='POST':
+        user_id = request.user
+        #Contenido del documento
+        title = request.POST['title']
+        content = request.POST['content']
+        request_to=request.user
+        form = ReviewForm(request.POST, request.FILES)
+        if form.is_valid():
+            photo = form.cleaned_data.get("image")
+        cripticSign = sign(content.encode(), request.POST['secret_key'], "SHA-256")
+        try:
+            #Verifica que la Private Key entregada sea correcta para ese usuario
+            verify(content.encode(), cripticSign, request.user.public_key)
+        except:
+            messages.error(request, 'La llave privada ingresada no es correcta.')
+            return HttpResponseRedirect('/create_document')
+        document = Document(
+            creator=user_id, 
+            title = title,
+            request_to=request_to, 
+            content=content,
+            accepted=1,
+            sign = cripticSign,
+            )
+        document.save()
+        return HttpResponseRedirect('/home')
     
 """
 My reviews (login required).

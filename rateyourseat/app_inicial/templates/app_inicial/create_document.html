@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %} Pedir firma de documento {% endblock %}
+{% block title %} Crear documento {% endblock %}
 {% block styles %}
 {% endblock %}
 
@@ -10,7 +10,7 @@
         <div class="container py-5">
             <div class="row">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2 class="display-6 fw-bold mb-4">Pedir firma para documento</h2>
+                    <h2 class="display-6 fw-bold mb-4">Crea un documento</h2>
                     <p class="text-muted">Selecciona usuario firmante</p>
                 </div>
             </div>
@@ -19,14 +19,6 @@
                     <div>
                         <form enctype="multipart/form-data" class="p-3 p-xl-4" method="post">
                             {% csrf_token %} <!-- csrf token for basic security -->
-                            <div style="margin-bottom: 16px;">
-                                <select name="request_to" class="form-select shadow form-control">
-                                    <option selected disabled>Selecciona usuario firmante</option>
-                                    {% for usuario in usuarios %}
-                                        <option value="{{ usuario.id }}">{{ usuario.username }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
                             <div>
                                 <input name="title" style="margin-bottom: 15px;" class="form-control shadow" type="text" placeholder="Título del documento" aria-label="default input example">
                             </div>
@@ -40,7 +32,10 @@
                             </div>
                             -->
                             <div>
-                                <button class="btn btn-primary shadow d-block w-100" type="submit">Ingresar solicitud</button>
+                                <input name="secret_key" style="margin-bottom: 15px;" class="form-control shadow" type="text" placeholder="Ingresa tu secret key" aria-label="default input example">
+                            </div>
+                            <div>
+                                <button class="btn btn-primary shadow d-block w-100" type="submit">Guardar documento</button>
                             </div>
                         </form>
                         
