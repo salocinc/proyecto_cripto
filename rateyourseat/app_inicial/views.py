@@ -9,7 +9,12 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from app_inicial.utils import create_initial_locations
+from django.core.files.storage import FileSystemStorage
 from rsa import *
+import os
+#Directorio donde se guardarán los txt
+file_dir = os.path.join(os.path.dirname(os.path.realpath('__file__')),"static","texts")
+
 
 """
 Manage vote for a review.
@@ -160,12 +165,12 @@ def sign_up(request):
         nombre= request.POST['usuario']
         email= request.POST['email']
         contraseña= request.POST['password']
-        (pubkey, privkey) = newkeys(256)
+        (pubkey, privkey) = newkeys(1024)
         (pubkey1, pubkey2) = (pubkey.n,pubkey.e)
         (secret_key1, secret_key2, secret_key3, secret_key4, secret_key5) = (privkey.n, privkey.e, privkey.d, privkey.p, privkey.q)
         if User.objects.filter(username=nombre).exists():
             #devolver al mismo login ojalá sin borrar la info ingresada con un mensaje que diga que ya existe ese username
-            return render(request,"app_inicial/signUp.html", {"error":"El nombre de usario '"+nombre+"' ya existe, eliga uno diferente"})
+            return render(request,"app_inicial/signUp.html", {"error":"El nombre de usuario '"+nombre+"' ya existe, eliga uno diferente"})
         user = User.objects.create_user(username=nombre, password=contraseña, email=email, public_key1=pubkey1, public_key2=pubkey2)
         login(request, user)
         context = {
@@ -234,7 +239,8 @@ Returns:
 def create_document(request):
     if request.method == 'GET':
         context = {
-            'current_page': 'create_document'
+            'current_page': 'create_document',
+            'is_logged': request.user.is_authenticated,
         }
         return render(request,"app_inicial/create_document.html", context)
     if request.method =='POST':
@@ -243,20 +249,42 @@ def create_document(request):
         title = request.POST['title']
         content = request.POST['content']
         request_to=request.user
-        secret_key1 = request.POST['secret_key']
+        secret_key1 = request.POST['secret_key1']
         secret_key2 = request.POST['secret_key2']
         secret_key3 = request.POST['secret_key3']
         secret_key4 = request.POST['secret_key4']
         secret_key5 = request.POST['secret_key5']
-        secret_key = PrivateKey(int(secret_key1), int(secret_key2), int(secret_key3), int(secret_key4), int(secret_key5))
-        form = ReviewForm(request.POST, request.FILES)
-        if form.is_valid():
-            photo = form.cleaned_data.get("image")
-        signature = sign(content.encode(), secret_key, "SHA-256")
         try:
-            #Verifica que la Private Key entregada sea correcta para ese usuario
-            verify(content.encode('ascii'), signature, request.user.public_key)
+            secret_key = PrivateKey(int(secret_key1), int(secret_key2), int(secret_key3), int(secret_key4), int(secret_key5))
         except:
+            print("falló la verificación")
+            return render(request,"app_inicial/create_document.html", {"error":"La llave privada ingresada no es correcta."})
+        fs = FileSystemStorage()
+        nombre_archivo="{title}.txt"
+        ruta_archivo = fs.path(nombre_archivo.format(title=title))
+        if os.access(os.path.dirname(ruta_archivo), os.W_OK):
+            print("El proceso tiene permisos de escritura en el directorio.")
+        else:
+            print("El proceso no tiene permisos de escritura en el directorio.")
+        try:
+            # Abre el archivo en modo de escritura (w).
+            with open(ruta_archivo, 'w') as archivo:
+                # Escribe el contenido del string en el archivo.
+                archivo.write(str(content))
+                archivo.close()
+                print(f"Se ha generado el archivo '{title}' correctamente.")
+        except IOError:
+            print(f"No se pudo generar el archivo '{title}'.")
+        #file = open(ruta_archivo, 'rb')
+        with open(ruta_archivo, 'rb') as file:
+            data = file.read()
+            signature = sign(data, secret_key, "SHA-256")
+        try:
+            pubkey = PublicKey(int(request.user.public_key1), int(request.user.public_key2))
+            #Verifica que la Private Key entregada sea correcta para ese usuario
+            verify(data, signature, pubkey)
+        except:
+            print("falló la verificación")
             messages.error(request, 'La llave privada ingresada no es correcta.')
             return HttpResponseRedirect('/create_document')
         document = Document(

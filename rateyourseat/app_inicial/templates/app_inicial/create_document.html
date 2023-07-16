@@ -62,6 +62,9 @@
                                   <i class="fas fa-eye-slash"></i>
                                 </button>
                             </div>
+                            {% if error %}
+                              <p style="color:rgb(176, 59, 59);">{{ error }}</p>
+                            {% endif %}
                             <div>
                                 <button class="btn btn-primary shadow d-block w-100" type="submit" style="margin-top: 10px;">Guardar documento</button>
                             </div>

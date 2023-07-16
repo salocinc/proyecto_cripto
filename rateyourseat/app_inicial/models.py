@@ -68,10 +68,10 @@ class Vote_Review(models.Model):
 """
 Nuevos Models para la firma
 """
-class Document():
-    creator = models.ForeignKey('User', on_delete=models.CASCADE)
+class Document(models.Model):
+    creator = models.ForeignKey('User', on_delete=models.CASCADE, related_name='creator')
     title = models.TextField()
     content = models.TextField()
     sign = models.TextField()
-    request_to = models.ForeignKey('User', on_delete=models.CASCADE)
+    request_to = models.ForeignKey('User', on_delete=models.CASCADE, related_name='request_to')
     accepted = models.IntegerField()
