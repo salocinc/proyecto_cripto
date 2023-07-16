@@ -75,3 +75,6 @@ class Document(models.Model):
     sign = models.TextField()
     request_to = models.ForeignKey('User', on_delete=models.CASCADE, related_name='request_to')
     accepted = models.IntegerField()
+    file_txt = models.FileField(null=True, blank=True)
+    def __str__(self):
+        return self.title

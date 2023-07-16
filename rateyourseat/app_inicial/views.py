@@ -1,5 +1,6 @@
 import datetime
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.template.loader import get_template
@@ -257,45 +258,62 @@ def create_document(request):
         try:
             secret_key = PrivateKey(int(secret_key1), int(secret_key2), int(secret_key3), int(secret_key4), int(secret_key5))
         except:
-            print("falló la verificación")
-            return render(request,"app_inicial/create_document.html", {"error":"La llave privada ingresada no es correcta."})
+            context={"error":"La llave privada ingresada no es correcta.",
+                     "titulo":title,
+                     "contenido":content,
+                     "is_logged": request.user.is_authenticated,
+                     "current_page": "create_document",
+                     }
+            return render(request,"app_inicial/create_document.html", context)
         fs = FileSystemStorage()
-        nombre_archivo="{title}.txt"
+        nombre_archivo="{title}1.txt"
         ruta_archivo = fs.path(nombre_archivo.format(title=title))
-        if os.access(os.path.dirname(ruta_archivo), os.W_OK):
-            print("El proceso tiene permisos de escritura en el directorio.")
-        else:
-            print("El proceso no tiene permisos de escritura en el directorio.")
+        #Se genera el .txt
         try:
             # Abre el archivo en modo de escritura (w).
             with open(ruta_archivo, 'w') as archivo:
                 # Escribe el contenido del string en el archivo.
                 archivo.write(str(content))
                 archivo.close()
-                print(f"Se ha generado el archivo '{title}' correctamente.")
+                print(f"Se ha generado el archivo '{title}1' correctamente.")
         except IOError:
-            print(f"No se pudo generar el archivo '{title}'.")
-        #file = open(ruta_archivo, 'rb')
+            print(f"No se pudo generar el archivo '{title}1'.")
+
         with open(ruta_archivo, 'rb') as file:
             data = file.read()
             signature = sign(data, secret_key, "SHA-256")
+            file.close()
         try:
             pubkey = PublicKey(int(request.user.public_key1), int(request.user.public_key2))
             #Verifica que la Private Key entregada sea correcta para ese usuario
             verify(data, signature, pubkey)
         except:
-            print("falló la verificación")
-            messages.error(request, 'La llave privada ingresada no es correcta.')
-            return HttpResponseRedirect('/create_document')
-        document = Document(
+            print("error2")
+            context={"error":"La llave privada ingresada no es correcta.",
+                     "titulo":title,
+                     "contenido":content,
+                     "is_logged": request.user.is_authenticated,
+                     "current_page": "create_document",
+                     }
+            os.remove(ruta_archivo)
+            return render(request,"app_inicial/create_document.html", context)
+        #Se guarda el documento en la base de datos
+        with open(ruta_archivo, 'a+') as archivo:
+            #Escribe la firma en el documento
+            archivo.write("\n\n\nFirmado por: {user_id}\n\nFirma: {signature}".format(user_id=request.user, signature=str(signature)))
+            document = Document(
             creator=user_id, 
             title = title,
             request_to=request_to, 
             content=content,
             accepted=1,
             sign = signature,
+            file_txt=File(archivo, name=f"{title}.txt"),
             )
-        document.save()
+            document.save()
+            archivo.close()
+            #Se elimina el archivo original, dejando la copia con el nombre sin el número 1
+            os.remove(ruta_archivo)
         return HttpResponseRedirect('/home')
     
 """
