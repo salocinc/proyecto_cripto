@@ -7,7 +7,6 @@ User table with nick
 Args: AbstractUser: username,first_name,last_name,email,password,groups,user_permissions,is_staff,is_active,is_superuser,last_login,date_joined
 """
 class User(AbstractUser):
-        nick = models.CharField(max_length=20)
         email = models.EmailField(unique=True)
         public_key1 = models.TextField(null=True)
         public_key2 = models.TextField(null=True)
@@ -72,7 +71,7 @@ class Document(models.Model):
     creator = models.ForeignKey('User', on_delete=models.CASCADE, related_name='creator')
     title = models.TextField()
     content = models.TextField()
-    sign = models.TextField()
+    sign = models.TextField(null=True, blank=True)
     request_to = models.ForeignKey('User', on_delete=models.CASCADE, related_name='request_to')
     accepted = models.IntegerField()
     file_txt = models.FileField(null=True, blank=True)

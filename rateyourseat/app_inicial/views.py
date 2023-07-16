@@ -206,23 +206,43 @@ def request_to(request):
         }
         return render(request,"app_inicial/request_to.html", context)
     if request.method =='POST':
+        usuarios = User.objects.all()
         user_id = request.user
         #Contenido del documento
         title = request.POST['title']
         content = request.POST['content']
-        request_to=request.POST['request_to']
-        form = ReviewForm(request.POST, request.FILES)
-        if form.is_valid():
-            photo = form.cleaned_data.get("image")
-        document = Document(
-            creator=user_id, 
-            title = title,
-            request_to=request_to, 
-            content=content,
-            accepted=0,
-            sign = None,
-            )
-        document.save()
+        if title == '' or content == '':
+            context = {
+            "is_logged": request.user.is_authenticated,
+            'current_page': 'request_to',
+            'usuarios': usuarios,
+            'content': request.POST['content'],
+            'titulo': request.POST['title'],
+            }
+            if title == '':
+                context['error_titulo'] = 'Debe ingresar un título'
+            if content == '':
+                context['error_content'] = 'Debe ingresar un contenido'
+            return render(request,"app_inicial/request_to.html", context)
+        
+        request_to = User.objects.get(username=request.POST['request_to'])
+        fs = FileSystemStorage()
+        nombre_archivo= f"{title}1.txt"
+        ruta_archivo = fs.path(nombre_archivo)
+        with open(ruta_archivo, 'w+') as archivo:
+            archivo.write(str(content))
+            document = Document(
+                creator = user_id,
+                title = title,
+                request_to = request_to, 
+                content = content,
+                accepted = 0,
+                sign = None,
+                file_txt=File(archivo, name=f"{title}.txt"),
+                )
+            document.save()
+            archivo.close()
+            os.remove(ruta_archivo)
         context = {
             'current_page': 'request_to',
         }
@@ -266,8 +286,8 @@ def create_document(request):
                      }
             return render(request,"app_inicial/create_document.html", context)
         fs = FileSystemStorage()
-        nombre_archivo="{title}1.txt"
-        ruta_archivo = fs.path(nombre_archivo.format(title=title))
+        nombre_archivo= f"{title}1.txt"
+        ruta_archivo = fs.path(nombre_archivo)
         #Se genera el .txt
         try:
             # Abre el archivo en modo de escritura (w).
@@ -279,11 +299,11 @@ def create_document(request):
         except IOError:
             print(f"No se pudo generar el archivo '{title}1'.")
 
-        with open(ruta_archivo, 'rb') as file:
-            data = file.read()
-            signature = sign(data, secret_key, "SHA-256")
-            file.close()
         try:
+            with open(ruta_archivo, 'rb') as file:
+                data = file.read()
+                signature = sign(data, secret_key, "SHA-256")
+                file.close()
             pubkey = PublicKey(int(request.user.public_key1), int(request.user.public_key2))
             #Verifica que la Private Key entregada sea correcta para ese usuario
             verify(data, signature, pubkey)
