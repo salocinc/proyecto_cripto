@@ -15,23 +15,26 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
-                {% if not documents %}
-                    <h4 class="text-center">No tienes documentos todavía :c</h4>
-                    <br>
-                    <div class="text-center">
-                        <a class="btn btn-primary" href="/create_document/">Crear un documento</a>
-                    </div>
-                {% else %}
+            {% if not documents %}
+                <h4 class="text-center">No tienes documentos todavía :c</h4>
+                <br>
+                <div class="text-center">
+                    <a class="btn btn-primary" href="/create_document/">Crear un documento</a>
+                </div>
+            {% else %}
+                <div class="col-md-6">
+                    <h3 class="text-center">Solicitudes pendientes</h3>
                     {% for element in documents %}
                         {% include 'base_document.html' with document=element %}
                     {% endfor %}
-                {% endif %}
-            </div>
-            <div class="col-md-6">
-                <!-- Aquí agregas el segundo listado vertical -->
-                <!-- Puedes duplicar el código del primer listado y modificarlo según tus necesidades -->
-            </div>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="text-center">Participaciones anteriores</h3>
+                    {% for element in documentss %}
+                        {% include 'base_document.html' with document=element %}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
         <a href="/create_document" class="btn floating-button btn-floating"></a>
     </div>

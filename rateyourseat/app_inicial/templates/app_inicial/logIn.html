@@ -30,7 +30,7 @@
                                 {% csrf_token %}
                                 <div class="mb-3"><input class="form-control" type="username" name="username" placeholder="Nombre de usuario"></div>
                                 <div class="mb-3"><input class="form-control" type="password" name="password" placeholder="Contraseña"></div>
-                                <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit" role="button" href="/home">Iniciar sesión</button></div>
+                                <div class="mb-3"><button class="btn btn-primary d-block w-100" type="submit" role="button" href="/my_documents">Iniciar sesión</button></div>
                                 {% if messages %}
                                     {% for message in messages %}
                                         <p style="color:red" class="error">{{ message }}</p>

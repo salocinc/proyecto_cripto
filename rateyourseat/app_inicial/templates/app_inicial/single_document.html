@@ -3,6 +3,29 @@
 {% block title %} {{document.title}} {% endblock %}
 
 {% block styles %}
+<style>
+    .boton-descarga {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .boton-descarga:hover {
+        background-color: #45a049;
+    }
+
+    .btn-group {
+        margin-left: 600px;
+    }
+</style>
+
 {% endblock %} 
 
 {% block content %}
@@ -15,9 +38,9 @@
                 <div class="col-3 d-flex flex-row-reverse">   
                     {% if single_document.request_to == request.user and single_document.accepted == 0%}
                         <div class="btn-group" role="group">
+                            <button name="modify" type="submit" class="btn btn-primary d-block w-100" value="sign" method="post">Firmar</button>
+                            <a href="{% url 'download_document' single_document.id %}" class="boton-descarga">Descargar</a>
                             <button class="btn btn-sm btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#WarningModal">Rechazar</button>
-                            <p> </p>
-                            <button name="modify" type="submit" class="btn" value="sign" method="post">Firmar</button>
                             <div class="modal fade" id="WarningModal" tabindex="-1" aria-labelledby="WarningModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
