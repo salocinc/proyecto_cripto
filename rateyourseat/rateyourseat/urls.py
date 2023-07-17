@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from app_inicial.views import home, log_in, sign_up, log_out, my_reviews, reviews, single_review, create_document, request_to, secret_keys
+from app_inicial.views import home, log_in, sign_up, log_out, my_documents, reviews, single_document, create_document, request_to, secret_keys, sign_document
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -29,8 +29,9 @@ urlpatterns = [
     path('log_out/', log_out, name='logout'),
     path('request_to/', request_to, name='request_to'),
     path('reviews/', reviews, name='reviews'),
-    path('my_reviews/', my_reviews, name='my_reviews'),
-    path('single_review/<str:id>', single_review, name='single_review'),
+    path('my_documents/', my_documents, name='my_documents'),
+    path('single_document/<str:id>', single_document, name='single_document'),
+    path('sign_document/<str:id>', sign_document, name='sign_document'),
     path('create_document/', create_document, name='create_document'),
     path('secret_keys/', secret_keys, name='secret_keys'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

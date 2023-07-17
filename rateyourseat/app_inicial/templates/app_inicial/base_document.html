@@ -1,0 +1,44 @@
+<link rel="stylesheet" href="../../static/css/reviews.css">
+
+{% load static %}
+<abbr title="Click para comentar y más" style="border-bottom: none !important; cursor: inherit !important; text-decoration: none !important;">
+    <div class="review" style="cursor: pointer; margin-bottom: 7px; justify-content: center; align-items: center; background-color: rgb(230, 229, 229); border-radius: 5px;">
+        <div class="col-md text-break" onclick="window.location='/single_document/{{document.id}}'">
+            <div class="py-4">
+                <div class="author">
+                    <span class="small-firma"> Creador: {{document.creator}}</span>
+                </div>
+                <h1 class="title" style="font-weight: bold;"> {{document.title}} </h1>
+                <p> {{document.content}} </p>
+                {% if document.accepted == 0 %}
+                    <p class="small-firma"> Estado: Pendiente </p>
+                {% elif document.accepted == 1 %}
+                    <p class="small-firma"> Estado: Aceptado <span>&#10003;</span></p> <!-- Tick icon "&#10003;" -->
+                    <p class="small-firma"> Firmado por: {{document.request_to}}</p>
+                    <p class="small-firma"> Firma: {{document.sign}}</p>
+                {% elif document.accepted == -1 %}
+                    <p> Estado: Rechazado <span>&#10060;</span></p> <!-- Cross icon "&#10060;" -->
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</abbr>
+<style>
+    .title {
+        font-size: 24px;
+    }
+
+    .small-firma {
+        font-size: 12px;
+    }
+    
+    .review {
+        margin-bottom: 7px;
+        padding: 10px;
+    }
+
+    .py-4 {
+        padding: 10px;
+    }
+</style>
+<script src="../../static/js/star.js"></script>

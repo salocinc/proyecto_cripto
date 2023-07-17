@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %} {{document.title}} {% endblock %}
+
+{% block styles %}
+{% endblock %} 
+
+{% block content %}
+
+<div class="container pt-4 pt-xl-5">
+    {% include 'base_document.html' with document=single_document%}
+    <form method="post">
+        {% csrf_token %}
+            <div class="row justify-content-between"> 
+                <div class="col-3 d-flex flex-row-reverse">   
+                    {% if single_document.request_to == request.user and single_document.accepted == 0%}
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#WarningModal">Rechazar</button>
+                            <p> </p>
+                            <button name="modify" type="submit" class="btn" value="sign" method="post">Firmar</button>
+                            <div class="modal fade" id="WarningModal" tabindex="-1" aria-labelledby="WarningModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="WarningModalLabel">Vas a rechazar firmar este documento</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <span>¿Estás seguro de que quieres rechazar este documento?</span><br> 
+                                            <span>Una vez hecho no lo podrás deshacer.</span>
+                                        </div>
+                                        <div class="modal-footer">        
+                                            <button name="modify" type="submit" class="btn btn-danger" value="decline" method="post">Rechazar documento</button>
+                                            <button type="button" class="btn" style="background-color: gray;color:azure" data-bs-dismiss="modal">Cancelar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div> 
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

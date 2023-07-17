@@ -4,7 +4,7 @@ from django.core.files import File
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.template.loader import get_template
-from app_inicial.models import User, Review, Location, ReviewForm, Comment, Vote_Review, Document
+from app_inicial.models import User, Review, Vote_Review, Document
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -320,7 +320,6 @@ def create_document(request):
         #Se guarda el documento en la base de datos
         with open(ruta_archivo, 'a+') as archivo:
             #Escribe la firma en el documento
-            archivo.write("\n\n\nFirmado por: {user_id}\n\nFirma: {signature}".format(user_id=request.user, signature=str(signature)))
             document = Document(
             creator=user_id, 
             title = title,
@@ -345,26 +344,19 @@ Returns:
     HttpResponse: The response object.
 """
 @login_required(login_url='/log_in')
-def my_reviews(request):
-    reviews = Review.objects.filter(user_id=request.user.id)
-    reviews = reviews.order_by('-date')
-    mantainVotes(request, reviews)
+def my_documents(request):
+    documents = Document.objects.filter(creator=request.user.id)
     
     context = {
         "is_logged": request.user.is_authenticated, 
-        "reviews": reviews,
-        'current_page': 'my_reviews',
+        "documents": documents,
+        'current_page': 'my_documents',
     }
 
     if request.method == 'POST':
-        modify=request.POST['modify']
-        if modify=='upvote':
-            manageVote(request,1)
-        if modify=='downvote':
-            manageVote(request,-1)
-        return HttpResponseRedirect('/my_reviews', context)
+        return HttpResponseRedirect('/my_documents', context)
 
-    return render(request, 'app_inicial/my_reviews.html', context)
+    return render(request, 'app_inicial/my_documents.html', context)
 
 """
 Reviews.
@@ -415,99 +407,53 @@ def reviews(request):
     return render(request, 'app_inicial/reviews.html', context)
 
 """
-Single review.
-This function displays the information of a single review and allows users to comment on it.
+Single document.
+This function displays the information of a single document.
 Args:
     request (HttpRequest)
-    id (int): The id of the review.
+    id (int): The id of the document.
 Returns:
     HttpResponse: The response object.
 """ 
-def single_review(request,id):
+def single_document(request,id):
     context = {
         "is_logged": request.user.is_authenticated,
-        'current_page': 'reviews',
+        
     }
-    if not id:
-        return HttpResponseRedirect('/reviews', context)
     
-    review=Review.objects.get(id=id)
-    if not review:
-        return HttpResponseRedirect('/reviews', context)
-
-    comments = Comment.objects.filter(review_id=id)
-    if request.user.is_authenticated:
-        if Vote_Review.objects.filter(user_id=request.user, review_id=review).exists():
-                review.isPositive=Vote_Review.objects.get(review=review,user=request.user).is_positive
+    if not id:
+        return HttpResponseRedirect('/home', context)
+    
+    document = Document.objects.get(id=id)
+    if not document:
+        return HttpResponseRedirect('/home', context)
 
     if request.method == 'GET': 
         context = {
             'is_logged': request.user.is_authenticated,
-            'single_review':review, 
-            'comments':comments,
-            'current_page': 'reviews',
+            'single_document':document, 
+            'current_page': 'documents',
         }
-        return render(request, 'app_inicial/single_review.html', context)
+        return render(request, 'app_inicial/single_document.html', context)
     
     if request.method == 'POST':
         modify=request.POST['modify']
-        if modify=="delete":
-            Review.objects.filter(id=id).delete()
+        if modify=="decline":
+            document.accepted = -1
+            document.save()
             context = {
                 "is_logged": request.user.is_authenticated,
-                'current_page': 'reviews',
+                'current_page': 'documents',
             }
-            return HttpResponseRedirect('/reviews', context)
+            return HttpResponseRedirect('/home', context)
         
-        elif modify=="edit":
-            concert = request.POST['event']
-            content = request.POST['content']
-            stars = request.POST['puntuacion']
-            review.content=content
-            review.concert=concert
-            review.stars=stars
-            review.save()
-        
-        elif modify=="comment":
-            if request.user.is_authenticated: 
-                comment_content = request.POST['comment-content']
-                if comment_content!="":    
-                    current_datetime = datetime.datetime.now()
-                    user_id = request.user
-                    review_id = review
-                    comment = Comment(
-                        user_id=user_id,
-                        review_id=review_id,
-                        content=comment_content,
-                        date=current_datetime
-                        )
-                    comment.save()
-                    
-        elif modify=="delete_comment":
-            comment_id=request.POST['comment-id']
-            comment=Comment.objects.get(id=comment_id)
-            if comment.user_id==request.user:    
-                comment.delete()
-        
-        elif modify=="edit_comment":
-            comment_id=request.POST['comment-id']
-            comment_content_edit= request.POST['comment-content-edit']
-            comment=Comment.objects.get(id=comment_id)
-            if comment.user_id==request.user:
-                comment.content=comment_content_edit
-                comment.save()
-        
-        elif modify=="upvote":
-            manageVote(request,1)
+        elif modify=="sign":
+            context = {
+                "is_logged": request.user.is_authenticated,
+                "document": document,
+                'current_page': 'documents',
+            }
+            return HttpResponseRedirect('/sign_document/'+id, context)
 
-        elif modify=="downvote":
-            manageVote(request,-1)
-        
-        context = {
-            'is_logged': request.user.is_authenticated,
-            'single_review':review, 
-            'comments':comments,
-            'current_page': 'reviews',
-        }
-
-        return HttpResponseRedirect('/single_review/'+id, context)
+def sign_document(request):
+    return

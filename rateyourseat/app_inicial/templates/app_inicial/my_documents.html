@@ -1,0 +1,46 @@
+{% extends 'app_inicial/base.html' %}
+
+{% block title %}Mis reseñas{% endblock %}
+
+{% block styles %} 
+<link rel="stylesheet" href="../../static/css/reviews.css">
+{% endblock %}
+
+{% block content %}
+    <section class="theme py-4 py-xl-1"></section>
+    <div class="container py-4 py-xl-1">
+        <div class="row mb-5">
+            <div class="col-md-8 col-xl-6 text-center mx-auto">
+                <h2>Mis documentos</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {% if not documents %}
+                    <h4 class="text-center">No tienes documentos todavía :c</h4>
+                    <br>
+                    <div class="text-center">
+                        <a class="btn btn-primary" href="/create_document/">Crear un documento</a>
+                    </div>
+                {% else %}
+                    {% for element in documents %}
+                        {% include 'base_document.html' with document=element %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="col-md-6">
+                <!-- Aquí agregas el segundo listado vertical -->
+                <!-- Puedes duplicar el código del primer listado y modificarlo según tus necesidades -->
+            </div>
+        </div>
+        <a href="/create_document" class="btn floating-button btn-floating"></a>
+    </div>
+    <footer>
+    </footer>
+{% endblock %}
+
+{% block scripts %}
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/js/startup-modern.js"></script>
+<script src="../../static/js/star.js"></script>
+{% endblock %}
