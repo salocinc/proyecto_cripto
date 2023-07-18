@@ -49,7 +49,7 @@ Returns:
 """
 def log_out(request):
     logout(request)
-    return HttpResponseRedirect('/my_documents')
+    return HttpResponseRedirect('/verification')
 
 
 """
@@ -277,6 +277,7 @@ Args:
 Returns:
     HttpResponse: The response object.
 """ 
+@login_required(login_url='/log_in')
 def single_document(request,id):
     context = {
         "is_logged": request.user.is_authenticated,
@@ -387,6 +388,7 @@ Args:
 Returns:
     FileResponse: The response object.
 """
+@login_required(login_url='/log_in')
 def download_document(request,doc_id):
     document = Document.objects.get(id=doc_id)
     titulo = document.title
