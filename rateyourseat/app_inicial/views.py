@@ -6,12 +6,11 @@ from django.core.files import File
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.template.loader import get_template
-from app_inicial.models import User, Review, Vote_Review, Document
+from app_inicial.models import User, Document
 from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from app_inicial.utils import create_initial_locations
 from django.core.files.storage import FileSystemStorage
 from rsa import *
 import os
