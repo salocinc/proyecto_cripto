@@ -1,5 +1,6 @@
 import datetime
 from django.db.models import Q
+from django.core.files.base import ContentFile
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.shortcuts import render, redirect
@@ -132,10 +133,12 @@ def request_to(request):
         
         request_to = User.objects.get(username=request.POST['request_to'])
         fs = FileSystemStorage()
-        nombre_archivo= f"{title}1.txt"
+        nombre_archivo= f"{title}.txt"
         ruta_archivo = fs.path(nombre_archivo)
         with open(ruta_archivo, 'w+') as archivo:
             archivo.write(str(content))
+            data=archivo.read()
+            content_file = ContentFile(data)
             document = Document(
                 creator = user_id,
                 title = title,
@@ -143,11 +146,10 @@ def request_to(request):
                 content = content,
                 accepted = 0,
                 sign = None,
-                file_txt=File(archivo, name=f"{title}.txt"),
+                file_txt=content_file,
                 )
             document.save()
             archivo.close()
-            os.remove(ruta_archivo)
         context = {
             'current_page': 'request_to',
         }
@@ -191,7 +193,7 @@ def create_document(request):
                      }
             return render(request,"app_inicial/create_document.html", context)
         fs = FileSystemStorage()
-        nombre_archivo= f"{title}1.txt"
+        nombre_archivo= f"{title}.txt"
         ruta_archivo = fs.path(nombre_archivo)
         #Se genera el .txt
         try:
@@ -200,9 +202,9 @@ def create_document(request):
                 # Escribe el contenido del string en el archivo.
                 archivo.write(str(content))
                 archivo.close()
-                print(f"Se ha generado el archivo '{title}1' correctamente.")
+                print(f"Se ha generado el archivo '{title}' correctamente.")
         except IOError:
-            print(f"No se pudo generar el archivo '{title}1'.")
+            print(f"No se pudo generar el archivo '{title}'.")
 
         try:
             with open(ruta_archivo, 'rb') as file:
@@ -223,7 +225,9 @@ def create_document(request):
             os.remove(ruta_archivo)
             return render(request,"app_inicial/create_document.html", context)
         #Se guarda el documento en la base de datos
-        with open(ruta_archivo, 'a+') as archivo:
+        with open(ruta_archivo, 'r') as archivo:
+            data=archivo.read()
+            content_file = ContentFile(data)
             #Escribe la firma en el documento
             document = Document(
             creator=user_id, 
@@ -232,12 +236,10 @@ def create_document(request):
             content=content,
             accepted=1,
             sign = signature,
-            file_txt=File(archivo, name=f"{title}.txt"),
+            file_txt=content_file,
             )
             document.save()
             archivo.close()
-            #Se elimina el archivo original, dejando la copia con el nombre sin el número 1
-            os.remove(ruta_archivo)
         return HttpResponseRedirect('/my_documents')
     
 """
@@ -380,7 +382,10 @@ def sign_document(request,id):
 """
 download_document: Allows the user to download a pending request.
 Args:
-
+    request (HttpRequest)
+    doc_id (int): The id of the document.
+Returns:
+    FileResponse: The response object.
 """
 def download_document(request,doc_id):
     document = Document.objects.get(id=doc_id)
@@ -393,3 +398,73 @@ def download_document(request,doc_id):
     response['Content-Type'] = 'text/plain'
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(nombre_archivo)
     return response
+
+def verification(request):
+    usuarios = User.objects.all()
+    if request.method == 'GET':
+        context = {
+            'current_page': 'verification',
+            'usuarios': usuarios,
+            'is_logged': request.user.is_authenticated,
+        }
+        return render(request,"app_inicial/verification.html", context)
+    signature=request.POST['signature']
+    if request.method =='POST':
+        try:
+            request_to = User.objects.get(username=request.POST['request_to'])
+        except:
+            context = {
+            'current_page': 'verification',
+            'usuarios': usuarios,
+            'is_logged': request.user.is_authenticated,
+            }
+            context['error_usuario'] = 'Debe ingresar un usuario'
+            return render(request,"app_inicial/verification.html", context)
+        if signature == '':
+            context = {
+            'current_page': 'verification',
+            'usuarios': usuarios,
+            'is_logged': request.user.is_authenticated,
+            }
+            context['error_firma'] = 'Debe ingresar una firma'
+            return render(request,"app_inicial/verification.html", context)
+        # Manejar el archivo subido
+        if 'txtFile' in request.FILES:
+            uploaded_file = request.FILES['txtFile']
+            # Utilizar una carpeta temporal para almacenar los archivos
+            temp_storage = FileSystemStorage(location='temp_uploads')
+            filename = temp_storage.save(uploaded_file.name, uploaded_file)
+            file_path = temp_storage.path(filename)
+            request_to = User.objects.get(username=request.POST['request_to'])
+            # Procesar el archivo (ejemplo: leer su contenido)
+            with temp_storage.open(file_path, 'rb') as file:
+                try:
+                    file_content = file.read().decode('utf-8')
+                    Document.objects.get(request_to=request_to, sign=signature, content=file_content)
+                    file.close()
+                    temp_storage.delete(filename)
+                except:
+                    context = {
+                        'current_page': 'verification',
+                        'usuarios': usuarios,
+                        'is_logged': request.user.is_authenticated,
+                    }
+                    context['error_firma'] = 'La firma no es válida'
+                    file.close()
+                    temp_storage.delete(filename)
+                    return render(request,"app_inicial/verification.html", context)
+            context = {
+                'current_page': 'verification',
+                'usuarios': usuarios,
+                'is_logged': request.user.is_authenticated,
+            }
+            context['success'] = 'La firma es válida'
+            return render(request,"app_inicial/verification.html", context)
+        else:
+            context = {
+                'current_page': 'verification',
+                'usuarios': usuarios,
+                'is_logged': request.user.is_authenticated,
+            }
+            context['error_archivo'] = 'Debe ingresar un archivo'
+            return render(request,"app_inicial/verification.html", context)

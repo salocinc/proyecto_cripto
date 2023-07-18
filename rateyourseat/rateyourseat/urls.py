@@ -16,13 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from app_inicial.views import log_in, sign_up, log_out, my_documents, single_document, create_document, request_to, secret_keys, sign_document, download_document  
+from app_inicial.views import log_in, sign_up, log_out, my_documents, single_document, create_document, request_to, secret_keys, sign_document, download_document, verification
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', my_documents),
+    path('', verification),
     path('log_in/', log_in),
     path('sign_up/', sign_up),
     path('log_out/', log_out, name='logout'),
@@ -33,4 +33,5 @@ urlpatterns = [
     path('create_document/', create_document, name='create_document'),
     path('secret_keys/', secret_keys, name='secret_keys'),
     path('descargar/<int:doc_id>/', download_document, name='download_document'),
+    path('verification/', verification, name='verification')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

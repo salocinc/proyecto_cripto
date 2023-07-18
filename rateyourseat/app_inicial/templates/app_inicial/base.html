@@ -14,11 +14,12 @@
 
 <body>
     <nav class="navbar navbar-light navbar-expand-md fixed-top navbar-shrink py-3" id="mainNav">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/my_documents"><span>E-SignatureHub</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/verification"><span>E-SignatureHub</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link{% if current_page == 'request_to' %} active{% endif %}" href="/request_to">Solicitar Firma</a></li>
                     <li class="nav-item"><a class="nav-link{% if current_page == 'create_document' %} active{% endif %}" href="/create_document">Crear documento</a></li>
+                    <li class="nav-item"><a class="nav-link{% if current_page == 'verification' %} active{% endif %}" href="/verification">Verificar firma</a></li>
                 </ul>
                 {% if is_logged %}
                     <div>

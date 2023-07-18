@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %} Verificar firma de documento {% endblock %}
+{% block styles %}
+{% endblock %}
+
+{% block content %} 
+<body>
+    <section class="theme py-4 py-xl-5">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="display-6 fw-bold mb-4">Verificar firma para documento</h2>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6">
+                    <div>
+                        <form enctype="multipart/form-data" class="p-3 p-xl-4" method="post">
+                            {% csrf_token %} <!-- csrf token for basic security -->
+                            <div style="margin-bottom: 16px;">
+                                <select name="request_to" class="form-select shadow form-control value=0">
+                                    <option selected disabled>Selecciona usuario firmante</option>
+                                    {% for usuario in usuarios %}
+                                        <option value="{{ usuario.username }}">{{ usuario.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if error_usuario %}
+                              <p style="color:rgb(176, 59, 59);">{{ error_usuario }}</p>
+                            {% endif %}
+                            <div>
+                                <input name="signature" style="margin-bottom: 15px;" class="form-control shadow" type="text" placeholder="Firma" value="{{titulo}}" aria-label="default input example">
+                            </div>
+                            {% if error_firma %}
+                              <p style="color:rgb(176, 59, 59);">{{ error_firma }}</p>
+                            {% endif %}
+                            <div>
+                                <label for="txtFile" class="form-label">Seleccionar archivo .txt:</label>
+                                <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt">
+                            </div>
+                            <div>
+                                <button class="btn btn-primary shadow d-block w-100" type="submit">Verificar</button>
+                            </div>
+                            {% if success %}
+                              <p style="color:rgb(28, 139, 0);">{{ success }}</p>
+                            {% endif %}
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

@@ -25,13 +25,13 @@
                 <div class="col-md-6">
                     <h3 class="text-center">Solicitudes pendientes</h3>
                     {% for element in documents %}
-                        {% include 'base_document.html' with document=element %}
+                        {% include 'base_document.html' with document=element current_page='my_documents'%}
                     {% endfor %}
                 </div>
                 <div class="col-md-6">
                     <h3 class="text-center">Participaciones anteriores</h3>
                     {% for element in documentss %}
-                        {% include 'base_document.html' with document=element %}
+                        {% include 'base_document.html' with document=element current_page='my_documents'%}
                     {% endfor %}
                 </div>
             {% endif %}
